@@ -1,0 +1,955 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Report Harian Santri</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+      :root {
+        --bg: #f6f3ec;
+        --card: #fffdf9;
+        --ink: #3b4a3f;
+        --mute: #7d8a80;
+        --ac: #7fa38a;
+        --acd: #5f8a6c;
+        --soft: #e6efe8;
+        --line: #ebe5d8;
+        --warm: #f3e3d3;
+        --danger: #c98a82;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #1e2521;
+          --card: #27302b;
+          --ink: #e6ede8;
+          --mute: #9aa8a0;
+          --ac: #8fb79b;
+          --acd: #a6cbb1;
+          --soft: #2f3b34;
+          --line: #35413a;
+          --warm: #3a3329;
+          --danger: #d49a92;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #1e2521;
+        --card: #27302b;
+        --ink: #e6ede8;
+        --mute: #9aa8a0;
+        --ac: #8fb79b;
+        --acd: #a6cbb1;
+        --soft: #2f3b34;
+        --line: #35413a;
+        --warm: #3a3329;
+        --danger: #d49a92;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Nunito", system-ui, sans-serif;
+        line-height: 1.5;
+      }
+      .wrap {
+        max-width: 540px;
+        margin: 0 auto;
+        padding: 22px 18px 70px;
+      }
+      .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+      }
+      h1 {
+        font-size: 1.45rem;
+        margin: 0;
+        font-weight: 700;
+      }
+      .sub {
+        color: var(--mute);
+        margin: 0 0 18px;
+        font-size: 0.93rem;
+      }
+      .card {
+        background: var(--card);
+        border-radius: 22px;
+        padding: 18px;
+        margin-bottom: 14px;
+        box-shadow: 0 6px 24px rgba(80, 100, 85, 0.08);
+        border: 1px solid var(--line);
+        animation: in 0.4s ease;
+      }
+      @keyframes in {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.88rem;
+        margin: 0 0 6px;
+      }
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1.5px solid var(--line);
+        background: var(--bg);
+        color: var(--ink);
+        font: inherit;
+        outline: none;
+        transition: 0.2s;
+      }
+      textarea {
+        min-height: 230px;
+        resize: vertical;
+        font-size: 0.88rem;
+      }
+      input:focus,
+      textarea:focus,
+      select:focus {
+        border-color: var(--ac);
+        box-shadow: 0 0 0 4px var(--soft);
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+      }
+      .row > * {
+        flex: 1;
+      }
+      .date {
+        display: inline-block;
+        background: var(--warm);
+        padding: 6px 14px;
+        border-radius: 99px;
+        font-size: 0.84rem;
+        margin-bottom: 14px;
+      }
+      button {
+        font: inherit;
+        cursor: pointer;
+        border: 0;
+        color: inherit;
+      }
+      .btn {
+        width: 100%;
+        padding: 14px;
+        border-radius: 16px;
+        background: var(--ac);
+        color: #fff;
+        font-weight: 700;
+        margin-top: 14px;
+        transition: 0.2s;
+      }
+      .btn:active {
+        transform: scale(0.98);
+      }
+      .btn.g {
+        background: var(--soft);
+        color: var(--acd);
+      }
+      .tabs {
+        display: flex;
+        background: var(--soft);
+        padding: 5px;
+        border-radius: 99px;
+        margin-bottom: 16px;
+      }
+      .tabs button {
+        flex: 1;
+        padding: 9px 4px;
+        border-radius: 99px;
+        background: none;
+        color: var(--mute);
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .tabs button.on {
+        background: var(--card);
+        color: var(--ink);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+      }
+      .kid {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 11px 0;
+        border-bottom: 1px dashed var(--line);
+      }
+      .kid:last-child {
+        border: 0;
+      }
+      .av {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--soft);
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+        color: var(--acd);
+        flex: none;
+      }
+      .kid .n {
+        flex: 1;
+        font-weight: 600;
+        min-width: 0;
+      }
+      .kid small {
+        display: block;
+        color: var(--mute);
+        font-weight: 400;
+      }
+      .send {
+        padding: 9px 16px;
+        border-radius: 99px;
+        background: var(--ac);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.88rem;
+        white-space: nowrap;
+      }
+      .send.done {
+        background: var(--soft);
+        color: var(--acd);
+      }
+      .send.off {
+        background: var(--line);
+        color: var(--mute);
+        pointer-events: none;
+      }
+      .ic {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: var(--soft);
+        color: var(--acd);
+        flex: none;
+        display: grid;
+        place-items: center;
+      }
+      .ic.d {
+        color: var(--danger);
+      }
+      pre {
+        white-space: pre-wrap;
+        font-family: inherit;
+        font-size: 0.84rem;
+        background: var(--bg);
+        padding: 14px;
+        border-radius: 14px;
+        margin: 10px 0 0;
+        max-height: 280px;
+        overflow: auto;
+      }
+      .hint {
+        color: var(--mute);
+        font-size: 0.84rem;
+        margin: 10px 0 0;
+        text-align: center;
+      }
+      .prog {
+        height: 8px;
+        background: var(--soft);
+        border-radius: 99px;
+        overflow: hidden;
+        margin: 4px 0 12px;
+      }
+      .prog i {
+        display: block;
+        height: 100%;
+        background: var(--ac);
+        width: 0;
+        transition: 0.4s;
+      }
+      .hide {
+        display: none !important;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 0 0 10px;
+      }
+      .chip {
+        padding: 6px 12px;
+        border-radius: 99px;
+        background: var(--warm);
+        font-size: 0.82rem;
+        font-weight: 600;
+      }
+      .srow {
+        display: grid;
+        grid-template-columns: 1fr 1.3fr auto;
+        gap: 8px;
+        margin-bottom: 10px;
+        align-items: center;
+      }
+      .tcard {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 0;
+        border-bottom: 1px dashed var(--line);
+      }
+      .tcard:last-child {
+        border: 0;
+      }
+      .tcard b {
+        flex: 1;
+      }
+      #tg {
+        width: 88px;
+        height: 40px;
+        border-radius: 99px;
+        overflow: hidden;
+        padding: 0;
+        border: 2px solid var(--line);
+        background: #cfe5ef;
+        flex: none;
+      }
+      #tg canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      ::view-transition-old(root),
+      ::view-transition-new(root) {
+        animation: none;
+        mix-blend-mode: normal;
+      }
+      .mo {
+        position: fixed;
+        inset: 0;
+        background: rgba(30, 40, 34, 0.45);
+        display: grid;
+        place-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s;
+        padding: 20px;
+        z-index: 50;
+        backdrop-filter: blur(3px);
+      }
+      .mo.show {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .mb {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 26px;
+        padding: 24px;
+        max-width: 340px;
+        width: 100%;
+        text-align: center;
+        transform: scale(0.92) translateY(10px);
+        transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+      }
+      .mo.show .mb {
+        transform: none;
+      }
+      .mi {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        background: var(--warm);
+        display: grid;
+        place-items: center;
+        margin: 0 auto 12px;
+        font-size: 1.7rem;
+      }
+      .mb h3 {
+        margin: 0 0 6px;
+        font-size: 1.1rem;
+      }
+      .mb p {
+        margin: 0;
+        color: var(--mute);
+        font-size: 0.92rem;
+      }
+      .btn.dg {
+        background: var(--danger);
+      }
+      .mb .row .btn {
+        margin-top: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="top">
+        <h1>&#127807; Report Harian</h1>
+        <button id="tg" aria-label="Ganti mode siang/malam">
+          <canvas id="cv"></canvas>
+        </button>
+      </div>
+      <p class="sub">Isi sekali, kirim dengan tenang.</p>
+      <div class="tabs">
+        <button data-t="1" class="on">Hari Ini</button
+        ><button data-t="2">Santri</button><button data-t="3">Template</button>
+      </div>
+
+      <section id="p1">
+        <div class="card">
+          <span class="date" id="tgl"></span>
+          <label for="tsel">Template</label
+          ><select id="tsel"></select>
+          <div class="row" style="margin-top: 12px">
+            <div>
+              <label for="surat">Surat</label
+              ><input id="surat" placeholder="At Takatsur" />
+            </div>
+            <div>
+              <label for="ayat">Ayat</label
+              ><input id="ayat" placeholder="1-3" />
+            </div>
+          </div>
+          <button class="btn g" id="prev">Lihat pratinjau</button>
+          <pre id="pre" class="hide"></pre>
+          <button class="btn" id="go">Siapkan Pengiriman</button>
+        </div>
+        <div class="card hide" id="list">
+          <label>Kirim ke orang tua</label>
+          <div class="prog"><i id="bar"></i></div>
+          <div id="kids"></div>
+          <p class="hint">
+            Tap Kirim, WhatsApp terbuka dengan pesan siap. Tinggal tekan send.
+          </p>
+        </div>
+      </section>
+
+      <section id="p2" class="hide">
+        <div class="card">
+          <label>Daftar santri &amp; nomor WA orang tua</label>
+          <p class="sub" style="margin-bottom: 12px">
+            Format 08xx atau 62xx. Tersimpan otomatis.
+          </p>
+          <div id="srows"></div>
+          <button class="btn g" id="addS">+ Tambah santri</button>
+        </div>
+      </section>
+
+      <section id="p3" class="hide">
+        <div class="card" id="tlist"></div>
+        <div class="card hide" id="ted">
+          <label for="tn">Nama template</label
+          ><input id="tn" placeholder="Report harian" />
+          <label for="tb" style="margin-top: 12px">Isi pesan</label>
+          <div class="chips">
+            <button class="chip" data-p="{tanggal}">{tanggal}</button
+            ><button class="chip" data-p="{nama}">{nama}</button
+            ><button class="chip" data-p="{surat}">{surat}</button
+            ><button class="chip" data-p="{ayat}">{ayat}</button>
+          </div>
+          <textarea id="tb"></textarea>
+          <button class="btn" id="tsave">Simpan template</button>
+          <button class="btn g" id="tcancel">Batal</button>
+        </div>
+        <button class="btn g" id="addT" style="margin-top: 0">
+          + Template baru
+        </button>
+      </section>
+    </div>
+    <div class="mo" id="mo">
+      <div class="mb">
+        <div class="mi" id="mic">&#127807;</div>
+        <h3 id="mt"></h3>
+        <p id="mm"></p>
+        <div class="row">
+          <button class="btn g" id="mn">Batal</button
+          ><button class="btn" id="my">OK</button>
+        </div>
+      </div>
+    </div>
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const E = {
+        clover: "\u{1F340}",
+        sun: "\u{1F33B}",
+        ok: "\u2705",
+        no: "\u274C",
+        spark: "\u2728",
+        pray: "\u{1F64F}\u{1F3FB}",
+        flow: "\u2698",
+      };
+      const ls = (k, v) => {
+        try {
+          if (v === undefined) {
+            const r = localStorage.getItem(k);
+            return r ? JSON.parse(r) : null;
+          }
+          localStorage.setItem(k, JSON.stringify(v));
+        } catch (e) {
+          return null;
+        }
+      };
+      const uid = () => Math.random().toString(36).slice(2, 9);
+      const bulan = [
+        "Januari",
+        "Februari",
+        "Maret",
+        "April",
+        "Mei",
+        "Juni",
+        "Juli",
+        "Agustus",
+        "September",
+        "Oktober",
+        "November",
+        "Desember",
+      ];
+      const today = () => {
+        const d = new Date();
+        return `${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
+      };
+      const dkey = () => {
+        const d = new Date();
+        return `sent-${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+      };
+      const DEF = `\u0628\u0633\u0645 \u0627\u0644\u0644\u0647 \u0627\u0644\u0631\u062D\u0645\u0646 \u0627\u0644\u0631\u062D\u064A\u0645
+Assalamu'alaikum Warohmatullahi Wabarohkatuh.
+
+
+${E.clover}Report  Daily Activity${E.clover}
+${E.flow}Tanggal : {tanggal}
+${E.flow} Nama Santri: {nama}
+
+${E.sun}Muroja'ah hafalan baru surah *{surat} Ayat {ayat}* ${E.ok}${E.no}
+${E.sun}Muroja'ah Kubro juz 30${E.ok}${E.no}
+${E.sun}Muroja'ah Pagi${E.ok}${E.no}
+${E.sun}Sholat 5 waktu${E.ok}${E.no}
+ -Subuh${E.ok}${E.no}
+ -Dzuhur ${E.ok}${E.no}
+ -Ashar ${E.ok}${E.no}
+ -Magrib ${E.ok}${E.no}
+ -Isya${E.ok}${E.no}
+${E.sun}tilawah/qiroah ${E.ok}${E.no}
+${E.sun}Tidur sebelum pukul 21:00 ${E.ok}${E.no}
+${E.sun}Tidur Siang ${E.ok}${E.no}
+${E.sun}Sholat Dhuha ${E.ok}${E.no}
+${E.sun}Sedekah subuh${E.ok}${E.no}
+
+Sebagai pengontrol Daily activity Ananda dirumah${E.spark}
+Di ${E.ok}jika dilakukan Dan di ${E.no} Jika Ananda belum lakukan ${E.pray}
+
+Note :
+* Report Vn dan mengirim daily activity akan kami update di GROUP MUROJA'AH.`;
+      let kids =
+        ls("kids") ||
+        ["Afdhan", "Rafisqy", "Naqi", "Fauzia", "Asiyah", "Aisyah"].map(
+          (n) => ({ id: uid(), name: n, phone: (ls("phones") || {})[n] || "" }),
+        );
+      let tpls = ls("tpls") || [
+        { id: "def", name: "Report harian", body: DEF },
+      ];
+      let sent = ls(dkey()) || {},
+        editing = null;
+      const saveK = () => ls("kids", kids),
+        saveT = () => ls("tpls", tpls);
+      saveK();
+      saveT();
+      const norm = (p) => {
+        p = (p || "").replace(/\D/g, "");
+        if (p.startsWith("0")) p = "62" + p.slice(1);
+        else if (p.startsWith("8")) p = "62" + p;
+        return p;
+      };
+      const cur = () => tpls.find((t) => t.id == $("tsel").value) || tpls[0];
+      const fill = (b, n) =>
+        b
+          .split("{tanggal}")
+          .join(today())
+          .split("{nama}")
+          .join(n)
+          .split("{surat}")
+          .join($("surat").value.trim() || "...")
+          .split("{ayat}")
+          .join($("ayat").value.trim() || "...");
+      function wa(p, t) {
+        const q = encodeURIComponent(t),
+          web = `https://api.whatsapp.com/send?phone=${p}&text=${q}`,
+          ua = navigator.userAgent;
+        if (/Android/i.test(ua))
+          return `intent://send/?phone=${p}&text=${q}#Intent;scheme=whatsapp;package=com.whatsapp;S.browser_fallback_url=${encodeURIComponent(web)};end`;
+        if (/iPhone|iPad/i.test(ua))
+          return `whatsapp://send?phone=${p}&text=${q}`;
+        return web;
+      }
+      const esc = (s) =>
+        String(s).replace(
+          /[&<>"]/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+        );
+      const TRASH = "&#128465;",
+        PEN = "&#9998;";
+      function ask(title, msg, ok, cancel, danger) {
+        return new Promise((res) => {
+          $("mt").textContent = title;
+          $("mm").textContent = msg;
+          $("mic").innerHTML = danger ? "&#127810;" : "&#127807;";
+          const o = $("mo"),
+            y = $("my"),
+            n = $("mn");
+          y.textContent = ok;
+          y.className = "btn" + (danger ? " dg" : "");
+          n.classList.toggle("hide", !cancel);
+          const c = (v) => {
+            o.classList.remove("show");
+            res(v);
+          };
+          y.onclick = () => c(true);
+          n.onclick = () => c(false);
+          o.onclick = (e) => {
+            if (e.target === o) c(false);
+          };
+          o.classList.add("show");
+        });
+      }
+      const tell = (m) => ask("Sebentar ya", m, "Oke", false, false);
+
+      function drawSel() {
+        const v = $("tsel").value;
+        $("tsel").innerHTML = tpls
+          .map((t) => `<option value="${t.id}">${esc(t.name)}</option>`)
+          .join("");
+        if (tpls.some((t) => t.id == v)) $("tsel").value = v;
+      }
+      function drawList() {
+        const t = cur(),
+          c = kids.filter((k) => sent[k.id]).length;
+        $("kids").innerHTML = kids
+          .map((k) => {
+            const p = norm(k.phone),
+              d = sent[k.id];
+            return `<div class="kid"><div class="av">${esc((k.name || "?")[0])}</div><div class="n">${esc(k.name || "(tanpa nama)")}<small>${p ? "+" + p : "Nomor belum diisi"}</small></div>
+<a class="send ${!p ? "off" : d ? "done" : ""}" data-k="${k.id}" href="${p ? wa(p, fill(t.body, k.name)) : "#"}">${!p ? "Isi nomor" : d ? "Terkirim \u2713" : "Kirim"}</a></div>`;
+          })
+          .join("");
+        $("bar").style.width =
+          (kids.length ? (c / kids.length) * 100 : 0) + "%";
+      }
+      function drawKids() {
+        $("srows").innerHTML = kids
+          .map(
+            (k) =>
+              `<div class="srow" data-id="${k.id}"><input data-f="name" placeholder="Nama" value="${esc(k.name)}"><input data-f="phone" type="tel" placeholder="08xxxxxxxxxx" value="${esc(k.phone)}"><button class="ic d" data-act="delS" aria-label="Hapus">${TRASH}</button></div>`,
+          )
+          .join("");
+      }
+      function drawT() {
+        $("tlist").innerHTML =
+          "<label>Template pesan</label>" +
+          tpls
+            .map(
+              (t) =>
+                `<div class="tcard" data-id="${t.id}"><b>${esc(t.name)}</b><button class="ic" data-act="editT" aria-label="Edit">${PEN}</button><button class="ic d" data-act="delT" aria-label="Hapus">${TRASH}</button></div>`,
+            )
+            .join("");
+      }
+      function openEd(t) {
+        editing = t ? t.id : "new";
+        $("tn").value = t ? t.name : "";
+        $("tb").value = t ? t.body : "";
+        $("ted").classList.remove("hide");
+        $("addT").classList.add("hide");
+        $("ted").scrollIntoView({ behavior: "smooth" });
+      }
+      function closeEd() {
+        editing = null;
+        $("ted").classList.add("hide");
+        $("addT").classList.remove("hide");
+      }
+
+      document.addEventListener("click", (e) => {
+        const tb = e.target.closest(".tabs button");
+        if (tb) {
+          const n = tb.dataset.t;
+          [1, 2, 3].forEach((i) => {
+            $("p" + i).classList.toggle("hide", i != n);
+          });
+          document
+            .querySelectorAll(".tabs button")
+            .forEach((b) => b.classList.toggle("on", b === tb));
+          if (n == 2) drawKids();
+          if (n == 3) {
+            drawT();
+            closeEd();
+          }
+          if (n == 1) {
+            drawSel();
+            if (!$("list").classList.contains("hide")) drawList();
+          }
+          return;
+        }
+        const s = e.target.closest(".send");
+        if (s && s.dataset.k) {
+          sent[s.dataset.k] = true;
+          ls(dkey(), sent);
+          setTimeout(drawList, 500);
+          return;
+        }
+        const a = e.target.closest("[data-act]");
+        if (!a) return;
+        const id = (a.closest("[data-id]") || {}).dataset?.id;
+        if (a.dataset.act == "delS") {
+          const k = kids.find((x) => x.id == id);
+          ask(
+            "Hapus santri?",
+            `${k.name || "Santri ini"} akan dihapus dari daftar.`,
+            "Hapus",
+            true,
+            true,
+          ).then((y) => {
+            if (y) {
+              kids = kids.filter((x) => x.id != id);
+              saveK();
+              drawKids();
+            }
+          });
+        }
+        if (a.dataset.act == "editT") openEd(tpls.find((t) => t.id == id));
+        if (a.dataset.act == "delT") {
+          if (tpls.length < 2) {
+            tell("Sisakan minimal satu template ya \u{1F331}");
+            return;
+          }
+          ask(
+            "Hapus template?",
+            "Template ini akan dihapus.",
+            "Hapus",
+            true,
+            true,
+          ).then((y) => {
+            if (y) {
+              tpls = tpls.filter((t) => t.id != id);
+              saveT();
+              drawT();
+            }
+          });
+        }
+      });
+      $("srows").addEventListener("input", (e) => {
+        const r = e.target.closest(".srow");
+        if (!r) return;
+        kids.find((k) => k.id == r.dataset.id)[e.target.dataset.f] =
+          e.target.value;
+        saveK();
+      });
+      $("addS").onclick = () => {
+        kids.push({ id: uid(), name: "", phone: "" });
+        saveK();
+        drawKids();
+        const i = $("srows").querySelectorAll("input[data-f=name]");
+        i[i.length - 1].focus();
+      };
+      $("addT").onclick = () => openEd(null);
+      $("tcancel").onclick = closeEd;
+      $("tsave").onclick = () => {
+        const n = $("tn").value.trim(),
+          b = $("tb").value;
+        if (!n || !b.trim()) {
+          tell("Isi nama dan pesan dulu ya");
+          return;
+        }
+        if (editing == "new") tpls.push({ id: uid(), name: n, body: b });
+        else {
+          const t = tpls.find((x) => x.id == editing);
+          t.name = n;
+          t.body = b;
+        }
+        saveT();
+        closeEd();
+        drawT();
+      };
+      document.querySelectorAll(".chip").forEach(
+        (c) =>
+          (c.onclick = () => {
+            const t = $("tb"),
+              p = c.dataset.p,
+              s = t.selectionStart;
+            t.value = t.value.slice(0, s) + p + t.value.slice(t.selectionEnd);
+            t.focus();
+            t.selectionStart = t.selectionEnd = s + p.length;
+          }),
+      );
+      $("prev").onclick = () => {
+        $("pre").textContent = fill(
+          cur().body,
+          kids[0] ? kids[0].name : "Nama",
+        );
+        $("pre").classList.toggle("hide");
+      };
+      $("go").onclick = () => {
+        const b = cur().body;
+        if (
+          /\{surat\}|\{ayat\}/.test(b) &&
+          (!$("surat").value.trim() || !$("ayat").value.trim())
+        ) {
+          tell("Isi surat dan ayat dulu ya \u{1F331}");
+          return;
+        }
+        if (!kids.length) {
+          tell("Tambahkan santri dulu di tab Santri");
+          return;
+        }
+        sent = {};
+        ls(dkey(), sent);
+        $("list").classList.remove("hide");
+        drawList();
+        $("list").scrollIntoView({ behavior: "smooth" });
+      };
+      $("tgl").textContent = "\u{1F4C5} " + today();
+      drawSel();
+
+      /* day/night toggle (three.js) */
+      let dark = ls("dark");
+      if (dark === null)
+        dark = matchMedia("(prefers-color-scheme: dark)").matches;
+      let T = dark ? 1 : 0,
+        target = T,
+        run = false,
+        R,
+        sc,
+        cam,
+        body,
+        mask,
+        stars,
+        sky = null;
+      try {
+        R = new THREE.WebGLRenderer({ canvas: $("cv"), antialias: true });
+        R.setPixelRatio(Math.min(devicePixelRatio, 2));
+        R.setSize(88, 40, false);
+        sc = new THREE.Scene();
+        cam = new THREE.OrthographicCamera(-44, 44, 20, -20, 0.1, 20);
+        cam.position.z = 10;
+        body = new THREE.Mesh(
+          new THREE.SphereGeometry(12, 32, 32),
+          new THREE.MeshBasicMaterial(),
+        );
+        sc.add(body);
+        sky = new THREE.Color();
+        mask = new THREE.Mesh(
+          new THREE.SphereGeometry(11, 32, 32),
+          new THREE.MeshBasicMaterial({ color: 0x000000 }),
+        );
+        mask.position.z = 3;
+        sc.add(mask);
+        const g = new THREE.BufferGeometry(),
+          pts = [
+            -30, 10, 0, -14, -8, 0, 2, 12, 0, -20, 2, 0, 10, -10, 0, 30, -11, 0,
+            24, 12, 0, -36, -12, 0,
+          ];
+        g.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
+        stars = new THREE.Points(
+          g,
+          new THREE.PointsMaterial({
+            color: 0xffffff,
+            size: 2.5,
+            sizeAttenuation: false,
+            transparent: true,
+          }),
+        );
+        sc.add(stars);
+      } catch (e) {
+        R = null;
+      }
+      const D1 = new THREE.Color(0xcfe5ef),
+        N1 = new THREE.Color(0x2b3a4a),
+        SU = new THREE.Color(0xf6c76b),
+        MO = new THREE.Color(0xf1ecd6);
+      function frame() {
+        T += (target - T) * 0.14;
+        const done = Math.abs(target - T) < 0.003;
+        if (done) T = target;
+        if (R) {
+          sky.lerpColors(D1, N1, T);
+          R.setClearColor(sky);
+          body.material.color.lerpColors(SU, MO, T);
+          body.position.set(-20 + 40 * T, 4 * Math.sin(T * Math.PI), 0);
+          body.scale.setScalar(1 - 0.1 * T);
+          mask.material.color.copy(sky);
+          mask.position.set(
+            body.position.x + 9 * T + (1 - T) * 40,
+            body.position.y + 3 * T,
+            3,
+          );
+          stars.material.opacity = Math.max(0, (T - 0.4) / 0.6);
+          R.render(sc, cam);
+        }
+        if (!done) requestAnimationFrame(frame);
+        else run = false;
+      }
+      function setTheme(d, anim) {
+        dark = d;
+        ls("dark", d);
+        document.documentElement.dataset.theme = d ? "dark" : "light";
+        target = d ? 1 : 0;
+        if (!R) return ($("tg").style.background = d ? "#2b3a4a" : "#cfe5ef");
+        if (!anim) T = target;
+        if (!run) {
+          run = true;
+          requestAnimationFrame(frame);
+        }
+      }
+      $("tg").onclick = () => {
+        const d = !dark;
+        if (
+          !document.startViewTransition ||
+          matchMedia("(prefers-reduced-motion: reduce)").matches
+        )
+          return setTheme(d, true);
+        const w = innerWidth,
+          h = innerHeight,
+          r = Math.hypot(w, h),
+          x = d ? w : 0,
+          y = d ? 0 : h;
+        const vt = document.startViewTransition(() => setTheme(d, true));
+        vt.ready
+          .then(() =>
+            document.documentElement.animate(
+              {
+                clipPath: [
+                  `circle(0px at ${x}px ${y}px)`,
+                  `circle(${r}px at ${x}px ${y}px)`,
+                ],
+              },
+              {
+                duration: 1000,
+                easing: "ease-in-out",
+                pseudoElement: "::view-transition-new(root)",
+              },
+            ),
+          )
+          .catch(() => {});
+      };
+      setTheme(dark, false);
+    </script>
+  </body>
+</html>
